@@ -182,7 +182,8 @@ jobs:
       - run:
           name: Install ansible
           command: |
-            python3 -m pip install --user ansible
+            yum install -y epel-release
+            yum install -y ansible
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
@@ -241,7 +242,8 @@ jobs:
       - run:
           name: Install ansible
           command: |
-            python3 -m pip install --user ansible
+            yum install -y epel-release
+            yum install -y ansible
       - run:
           name: Install node
           command: |
@@ -288,7 +290,8 @@ jobs:
       - run:
           name: Install ansible
           command: |
-            python3 -m pip install --user ansible
+            yum install -y epel-release
+            yum install -y ansible
       - run:
           name: Install node
           command: |
