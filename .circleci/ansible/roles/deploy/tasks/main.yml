@@ -1,0 +1,22 @@
+- name: Creates directory
+  file:
+    path: ~/backend
+    state: directory
+
+- name: Copy index test page
+  template:
+    src: "files/artifact.tar.gz"
+    dest: "~/backend/artifact.tar.gz"
+
+- name: Extract artifact.tar.gz into /var/lib/backend
+  ansible.builtin.unarchive:
+    src: artifact.tar.gz
+    dest: ~/backend
+
+- name: Install packages based on package.json.
+  community.general.npm:
+    path: ~/backend
+
+- name: Executing node
+  shell: |
+    pm2 start ~/backend/dist/main.js -f
