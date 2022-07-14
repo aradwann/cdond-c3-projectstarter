@@ -175,20 +175,21 @@ jobs:
           name: Install tar utility
           command: |
             yum install -y tar gzip
+      - run:
+          name: Install python and pip
+          command: |
+            yum -y install python3 pip 
+      - run:
+          name: Install ansible
+          command: |
+            python3 -m pip install --user ansible
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
       - attach_workspace:
           at: /tmp/workspace
       
-      - run:
-          name: Install python and pip
-          command: |
-            yum -y install python pip 
-      - run:
-          name: Install ansible
-          command: |
-            python3 -m pip install --user ansible
+      
       - run:
           name: Configure server
           command: |
@@ -229,12 +230,25 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: Install python and pip
+          command: |
+            yum -y install python3 pip 
+      - run:
+          name: Install ansible
+          command: |
+            python3 -m pip install --user ansible
+      - run:
+          name: Install node
+          command: |
+            yum install -y node
       - attach_workspace:
           at: /tmp/workspace
-      - run:
-          name: Install dependencies
-          command: |
-            yum -y install tar gzip ansible python node
+      
       - run:
           name: Get backend url
           command: |            
@@ -263,15 +277,31 @@ jobs:
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: Install python and pip
+          command: |
+            yum -y install python3 pip 
+      - run:
+          name: Install ansible
+          command: |
+            python3 -m pip install --user ansible
+      - run:
+          name: Install node
+          command: |
+            yum install -y node
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
       - attach_workspace:
           at: /tmp/workspace
-      - run:
-          name: Install dependencies
-          command: |
-            yum -y install tar gzip ansible python node
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       yum -y install tar gzip ansible python node
       - run:
           name: Deploy backend
           command: |
