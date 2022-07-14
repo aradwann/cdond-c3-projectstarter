@@ -182,9 +182,13 @@ jobs:
           at: /tmp/workspace
       
       - run:
-          name: Install dependencies
+          name: Install python and pip
           command: |
-            yum -y install ansible
+            yum -y install python pip 
+      - run:
+          name: Install ansible
+          command: |
+            python3 -m pip install --user ansible
       - run:
           name: Configure server
           command: |
