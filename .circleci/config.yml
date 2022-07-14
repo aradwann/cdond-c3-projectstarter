@@ -157,12 +157,12 @@ jobs:
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text >> inventory
+            --output text >> ~/inventory.txt
             
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - inventory.txt
       # Here's where you will add some code to rollback on failure  
       - destroy-environment    
 
@@ -190,7 +190,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: 18120211/node-aws-ansible-22.04
     steps:
       - checkout
       - restore_cache:
@@ -216,28 +216,13 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: 18120211/node-aws-ansible-22.04
     steps:
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
-      - run:
-          name: Install python and pip
-          command: |
-            yum -y install python3 pip 
-      - run:
-          name: Install ansible
-          command: |
-            yum install -y epel-release
-            yum install -y ansible
-      - run:
-          name: Install node
-          command: |
-            yum install -y node
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
+      - restore_cache:
+          keys: [frontend-build]
       
       - run:
           name: Get backend url
@@ -261,38 +246,19 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: amazon/aws-cli
+      - image: 18120211/node-aws-ansible-22.04
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
-      - run:
-          name: Install python and pip
-          command: |
-            yum -y install python3 pip 
-      - run:
-          name: Install ansible
-          command: |
-            yum install -y epel-release
-            yum install -y ansible
-      - run:
-          name: Install node
-          command: |
-            yum install -y node
+      
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
       - attach_workspace:
-          at: /tmp/workspace
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       yum -y install tar gzip ansible python node
+          at: ~/
+     
       - run:
           name: Deploy backend
           command: |
