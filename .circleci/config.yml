@@ -168,35 +168,23 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: 18120211/aws-ansible-22.04
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
-      - run:
-          name: Install python and pip
-          command: |
-            yum -y install python3 pip 
-      - run:
-          name: Install ansible
-          command: |
-            
-            yum install -y ansible
+          name: Check inventory
+          command: cat ~/inventory.txt
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
-      - attach_workspace:
-          at: /tmp/workspace
-      
-      
       - run:
           name: Configure server
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-
+     
       # Here's where you will add some code to rollback on failure 
       - destroy-environment        
 
