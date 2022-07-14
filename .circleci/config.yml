@@ -171,15 +171,20 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
       - attach_workspace:
           at: /tmp/workspace
+      
       - run:
           name: Install dependencies
           command: |
-            yum -y install tar gzip ansible
+            yum -y install ansible
       - run:
           name: Configure server
           command: |
