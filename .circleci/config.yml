@@ -168,25 +168,22 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: alpine:3.14
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
           name: Install tar utility
           command: |
-            apk add tar gzip
+            yum install -y tar gzip
       - run:
           name: Install python and pip
           command: |
-            apk add python3 pip 
+            yum -y install python3 pip 
       - run:
           name: Install ansible
           command: |
-            apk add ansible
-      - run:
-          name: Install aws-cli
-          command: |
-            apk add --no-cache aws-cli
+            
+            yum install -y ansible
       - add_ssh_keys:
           fingerprints:
             - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
