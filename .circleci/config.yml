@@ -3,21 +3,19 @@ version: 2.1
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    # parameters:
-      # Add parameter here   
+ 
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
+            echo "------------------- Destroying environment ---------------------" 
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
             
 
   revert-migrations:
-    description: Revert the last migration if successfully run in the current workflow.
-    # parameters:
-    #   # Add parameter here     
+    description: Revert the last migration if successfully run in the current workflow.    
     steps:
       - run:
           name: Revert migrations
@@ -289,14 +287,12 @@ jobs:
       - image: 18120211/aws-ansible-22.04 
     steps:
       - checkout
-      - run:
-          name: Get backend url
-          command: |
-            export BACKEND_IP=$(aws ec2 describe-instances \
-             --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            
       - run:
           name: Backend smoke test.
           command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
