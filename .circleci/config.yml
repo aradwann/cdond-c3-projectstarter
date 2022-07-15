@@ -24,12 +24,11 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = $(curl https://keyvalue.immanuel.co/api/KeyVal/GetValue/nn0z2v3u/migration)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
+              cd ~/project/backend
+              npm install
               npm run migrations:revert
             fi
             
@@ -105,8 +104,11 @@ jobs:
           name: Front-end vulnerablity 
           command: |
              cd frontend
+             npm audit fix --audit-level=critical --force
+             npm audit --audit-level=critical
             # the fix breaks the build
             #  npm audit --audit-level=critical
+            
             
 
 
@@ -121,6 +123,8 @@ jobs:
           name: Back-end vulnerablity
           command: |
              cd backend
+             npm audit fix --audit-level=critical --force
+             npm audit --audit-level=critical
             # the fix breaks the build
             #  npm audit --audit-level=critical
 
@@ -208,11 +212,12 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
                 # If you are using memstash.io, generate the token "7933fe63-4687-4fa1-8426-aa25aa1730ec" on the website
-                curl -X POST https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/nn0z2v3u/migration/1              
+                curl -X POST https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/nn0z2v3u/migration/1
+            else
+                curl -X POST https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/nn0z2v3u/migration/0              
             fi
 
-     # Here's where you will add some code to rollback on failure  
-      - revert-migrations  
+     # Here's where you will add some code to rollback on failure   
       - destroy-environment  
 
   deploy-frontend:
