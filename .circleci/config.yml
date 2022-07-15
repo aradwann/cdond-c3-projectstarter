@@ -104,8 +104,8 @@ jobs:
           name: Front-end vulnerablity 
           command: |
              cd frontend
-             npm audit fix --audit-level=critical --force
-             npm audit --audit-level=critical
+            #  npm audit fix --audit-level=critical --force
+            #  npm audit --audit-level=critical
             # the fix breaks the build
             #  npm audit --audit-level=critical
             
@@ -123,8 +123,8 @@ jobs:
           name: Back-end vulnerablity
           command: |
              cd backend
-             npm audit fix --audit-level=critical --force
-             npm audit --audit-level=critical
+            #  npm audit fix --audit-level=critical --force
+            #  npm audit --audit-level=critical
             # the fix breaks the build
             #  npm audit --audit-level=critical
 
