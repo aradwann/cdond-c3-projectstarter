@@ -3,15 +3,11 @@
     src: ~/project/backend.tar.gz
     dest: /home/ubuntu/
 
-- name: "list ubuntu files"
+- name: "list dist files"
   command: ls
   args:
-    chdir: /home/ubuntu
+    chdir: /home/ubuntu/dist
 
-- name: "list project files"
-  command: ls
-  args:
-    chdir: /home/ubuntu/project
 
 # - name: "install node_modules"
 #   become: true
