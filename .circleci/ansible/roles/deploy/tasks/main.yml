@@ -1,31 +1,31 @@
 - name: "Unarchive files and move to ec2"
   unarchive:
     src: ~/project/backend.tar.gz
-    dest: /home/ubuntu/
+    dest: /home/ubuntu
 
-- name: "list dist files"
-  command: ls
-  args:
-    chdir: /home/ubuntu/dist
+# - name: "list dist files"
+#   command: ls
+#   args:
+#     chdir: /home/ubuntu/dist
 
 
 # - name: "install node_modules"
 #   become: true
 #   command: npm install
 #   args:
-#     chdir: /home/ubuntu/backend
+#     chdir: /home/ubuntu
 
 # - name: "build npm packages"
 #   command: npm run build
 #   args:
-#     chdir: /home/ubuntu/backend
+#     chdir: /home/ubuntu
 
-- name: "list backend files"
-  command: ls
-  args:
-    chdir: /home/ubuntu/backend/dist
+# - name: "list backend files"
+#   command: ls
+#   args:
+#     chdir: /home/ubuntu
 
 - name: "start server"
   command: pm2 start main.js --name=backend
   args:
-    chdir: /home/ubuntu/backend/dist
+    chdir: /home/ubuntu/dist
