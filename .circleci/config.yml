@@ -181,7 +181,7 @@ jobs:
           command: cat ~/inventory.txt
       - add_ssh_keys:
           fingerprints:
-            - "fd:40:06:65:39:7d:da:93:15:48:5c:c0:76:1b:c6:8e"
+            - "c4:a1:0c:da:35:cb:af:8e:35:40:ec:85:e6:c1:00:82:55:7d:75:b2"
       - run:
           name: Configure server
           command: |
