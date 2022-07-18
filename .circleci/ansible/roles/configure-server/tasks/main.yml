@@ -37,10 +37,10 @@
     name: nodejs
     state: present
 
-- name: "install dependencies."
+- name: "install python3."
   become: yes
   apt:
-    name: ["python3", "nodejs", "npm"]
+    name: ["python3"]
     state: latest
     update_cache: yes
 
