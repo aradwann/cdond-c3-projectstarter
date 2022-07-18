@@ -1,10 +1,22 @@
-- name: "Unarchive files and move to ec2"
+---
+- name: "Creates backend app directory"
+  file:
+    path: ~/glee-backend
+    state: directory
+
+- name: "Unarchive backend files"
   unarchive:
-    src: ~/project/backend.tar.gz
-    dest: /home/ubuntu
+    src: backend.tar.gz
+    dest: ~/glee-backend
 
+- name: "Installing Node Dependencies"
+  shell: |
+    cd ~/glee-backend
+    npm i
 
-- name: "start server"
-  command: pm2 start main.js --name=backend
-  args:
-    chdir: /home/ubuntu/dist
+- name: "Executing Node app with PM2"
+  shell: |
+    cd ~/glee-backend/dist
+    pm2 stop default
+    pm2 start main.js
+  register: execute_node

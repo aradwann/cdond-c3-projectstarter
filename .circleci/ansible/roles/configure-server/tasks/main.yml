@@ -20,22 +20,18 @@
   become: yes
   apt:
     autoremove: yes
-    
-- name: Install the gpg key for nodejs LTS
-  apt_key:
-    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-    state: present
 
-- name: Install the nodejs LTS repos
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
-    state: present
-    update_cache: yes
+- name: "Add Node.js from Nodesource"
+  become: true
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
 
-- name: Install the nodejs
+- name: "Install Node.js 13"
+  become: true
   apt:
-    name: nodejs
-    state: present
+    name: ["nodejs"]
+    state: latest
+    update_cache: yes
 
 - name: "install python3."
   become: yes
