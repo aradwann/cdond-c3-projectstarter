@@ -18,15 +18,15 @@
 
   # Get the environment variables from CircleCI and add to the EC2 instance
   environment:
-    - TYPEORM_CONNECTION: "{{ lookup('ansible_env', 'TYPEORM_CONNECTION')}}"
-    - TYPEORM_ENTITIES: "{{ lookup('ansible_env', 'TYPEORM_ENTITIES')}}"
-    - TYPEORM_HOST: "{{ lookup('ansible_env', 'TYPEORM_HOST')}}"
+    - TYPEORM_CONNECTION: "{{ lookup('ansible.builtin.env', 'TYPEORM_CONNECTION')}}"
+    - TYPEORM_ENTITIES: "{{ lookup('ansible.builtin.env', 'TYPEORM_ENTITIES')}}"
+    - TYPEORM_HOST: "{{ lookup('ansible.builtin.env', 'TYPEORM_HOST')}}"
     - TYPEORM_PORT: 5432
-    - TYPEORM_USERNAME: "{{ lookup('ansible_env', 'TYPEORM_USERNAME')}}"
-    - TYPEORM_PASSWORD: "{{ lookup('ansible_env', 'TYPEORM_PASSWORD')}}"
-    - TYPEORM_DATABASE: "{{ lookup('ansible_env', 'TYPEORM_DATABASE')}}"
-    - TYPEORM_MIGRATIONS: "{{ lookup('ansible_env', 'TYPEORM_MIGRATIONS')}}"
-    - TYPEORM_MIGRATIONS_DIR: "{{ lookup('ansible_env', 'TYPEORM_MIGRATIONS_DIR')}}"
+    - TYPEORM_USERNAME: "{{ lookup('ansible.builtin.env', 'TYPEORM_USERNAME')}}"
+    - TYPEORM_PASSWORD: "{{ lookup('ansible.builtin.env', 'TYPEORM_PASSWORD')}}"
+    - TYPEORM_DATABASE: "{{ lookup('ansible.builtin.env', 'TYPEORM_DATABASE')}}"
+    - TYPEORM_MIGRATIONS: "{{ lookup('ansible.builtin.env', 'TYPEORM_MIGRATIONS')}}"
+    - TYPEORM_MIGRATIONS_DIR: "{{ lookup('ansible.builtin.env', 'TYPEORM_MIGRATIONS_DIR')}}"
 
   roles:
     - configure-server
