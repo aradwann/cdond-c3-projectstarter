@@ -169,7 +169,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: 18120211/aws-ansible-22.04
+      - image: aradwann/ubuntu-aws-node-ansible:latest
     steps:
       - checkout
       - attach_workspace:
@@ -190,7 +190,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: 18120211/node-aws-ansible-22.04
+      - image: aradwann/ubuntu-aws-node-ansible:latest
     steps:
       - checkout
       - restore_cache:
@@ -218,7 +218,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: 18120211/node-aws-ansible-22.04
+      - image: aradwann/ubuntu-aws-node-ansible:latest
     steps:
       - checkout
       - attach_workspace:
@@ -252,7 +252,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: 18120211/node-aws-ansible-22.04
+      - image: aradwann/ubuntu-aws-node-ansible:latest
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
@@ -283,7 +283,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: 18120211/aws-ansible-22.04 
+      - image: aradwann/ubuntu-aws-node-ansible:latest 
     steps:
       - checkout
             
@@ -319,7 +319,7 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: 18120211/aws-ansible-22.04
+      - image: aradwann/ubuntu-aws-node-ansible:latest
     steps:
       - checkout
       
@@ -347,7 +347,7 @@ jobs:
 
   cleanup:
       docker:
-        - image: 18120211/aws-ansible-22.04
+        - image: aradwann/ubuntu-aws-node-ansible:latest
       steps:
         - checkout
         - attach_workspace:
