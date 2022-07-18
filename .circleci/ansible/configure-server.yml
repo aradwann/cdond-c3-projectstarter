@@ -10,7 +10,8 @@
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
-
+    - NODEJS_VERSION: "14"
+    - ansible_distribution_release: "jammy"
     - os_environment:
         - key: TYPEORM_CONNECTION
           value: "{{ lookup('ansible.builtin.env', 'TYPEORM_CONNECTION')}}"

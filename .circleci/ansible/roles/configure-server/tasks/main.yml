@@ -7,41 +7,45 @@
   with_items: "{{ os_environment }}"
 
 - name: "update apt packages."
-  become: yes
+  become: true
   apt:
     update_cache: yes
 
 - name: "upgrade packages"
-  become: yes
+  become: true
   apt:
     upgrade: yes
 
 - name: remove dependencies that are no longer required
-  become: yes
+  become: true
   apt:
     autoremove: yes
 
-- name: "Add Node.js from Nodesource"
-  become: true
-  shell: |
-    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+- name: Install the gpg key for nodejs LTS
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
 
-- name: "Install Node.js 13"
-  become: true
-  apt:
-    name: ["nodejs"]
-    state: latest
+- name: Install the nodejs LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
+    state: present
     update_cache: yes
 
+- name: Install the nodejs
+  apt:
+    name: nodejs
+    state: present
+
 - name: "install python3."
-  become: yes
+  become: true
   apt:
     name: ["python3"]
     state: latest
     update_cache: yes
 
 - name: "install pm2"
-  become: yes
+  become: true
   npm:
     name: pm2
     global: yes
