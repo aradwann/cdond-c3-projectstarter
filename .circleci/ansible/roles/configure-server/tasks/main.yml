@@ -1,53 +1,17 @@
-- name: customize /etc/environment
-  ansible.builtin.lineinfile:
-    dest: "/etc/environment"
-    state: present
-    regexp: "^{{ item.key }}="
-    line: "{{ item.key }}={{ item.value }}"
-  with_items: "{{ os_environment }}"
-
-- name: "update apt packages."
+---
+- name: "Add Node.js from Nodesource"
+  become: true
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+- name: "Install Node.js 13"
   become: true
   apt:
-    update_cache: yes
-
-- name: "upgrade packages"
-  become: true
-  apt:
-    upgrade: yes
-
-- name: remove dependencies that are no longer required
-  become: true
-  apt:
-    autoremove: yes
-
-- name: Install the gpg key for nodejs LTS
-  apt_key:
-    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-    state: present
-
-- name: Install the nodejs LTS repos
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
-    state: present
-    update_cache: yes
-
-- name: Install the nodejs
-  apt:
-    name: nodejs
-    state: present
-
-- name: "install python3."
-  become: true
-  apt:
-    name: ["python3"]
+    name: ["nodejs"]
     state: latest
     update_cache: yes
 
-- name: "install pm2"
-  become: true
+- name: "Install PM2 Globally"
   npm:
     name: pm2
     global: yes
-    production: yes
-    state: present
+    
