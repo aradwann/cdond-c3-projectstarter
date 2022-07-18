@@ -3,36 +3,6 @@ orbs:
  slack: circleci/slack@4.9.3
 
 commands:
- 
-  install_awscli:
-    description: Install AWS CLI v2
-    steps:
-      - run:
-          name: Install AWS CLI v2
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
-  install_ansible:
-    description: Install Ansible
-    steps:
-      - run:
-          name: Install Ansible
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
-            
-  install_nodejs:
-   description: Install Node.js 13
-   steps:
-     - run:
-         name: Install Node.js 13
-         command: |
-           curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-           sudo apt install -y nodejs
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -76,7 +46,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-dependecies]
       - run:
           name: Build front-end
           command: |
@@ -85,7 +55,7 @@ jobs:
            npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-deps
+          key: frontend-dependecies
 
   build-backend:
     docker:
@@ -93,7 +63,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-dependcies]
       - run:
           name: Back-end build
           command: |
@@ -102,7 +72,7 @@ jobs:
            npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-deps
+          key: backend-dependcies
 
   test-frontend:
     docker:
@@ -110,7 +80,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-dependecies]
       - run:
           name: front-end unit test
           command: |
@@ -124,7 +94,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-dependcies]
       - run:
           name: Back-end unit test
           command: |
@@ -138,7 +108,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-dependecies]
       - run:
           name: front-end audit
           command: |
@@ -153,22 +123,20 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-dependcies]
       - run:
           name: Back-end audit
           command: |
            cd backend
            npm i
            npm audit fix --force --audit-level=critical
-           npm audit fix --force --audit-level=critical
            npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
-      - install_awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -203,10 +171,9 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
-      - install_ansible
       - add_ssh_keys:
           fingerprints: ["89:8a:90:61:9b:7a:60:bc:40:7c:31:6c:df:83:b3:27"]
       - attach_workspace:
@@ -224,7 +191,6 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - install_awscli
       - run:
           name: Run migrations
           command: |
@@ -242,13 +208,11 @@ jobs:
       - revert-migrations
   deploy-frontend:
     docker:
-      - image: cimg/base:stable
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
-      - install_awscli
-      - install_nodejs
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-dependecies]
       - run:
           name: Install dependencies
           command: |
@@ -274,18 +238,15 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: cimg/base:stable
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
-      - install_awscli
-      - install_ansible
-      - install_nodejs
       - add_ssh_keys:
           fingerprints: ["89:8a:90:61:9b:7a:60:bc:40:7c:31:6c:df:83:b3:27"]
       - attach_workspace:
           at: ~/
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-dependcies]
       - run:
           name: Install dependencies
           command: |
@@ -313,11 +274,9 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/base:stable
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
-      - install_awscli
-      - install_nodejs
       - run:
           name: Backend smoke test.
           command: |
@@ -348,11 +307,9 @@ jobs:
 
   cloudfront-update:
    docker:
-     - image: cimg/base:stable
+     - image: aradwann/ubuntu-aws-node-ansible
    steps:
      - checkout
-     - install_awscli
-     - install_nodejs
      - run:
          name: Save Old Workflow ID to kvdb.io
          command: |
@@ -372,11 +329,9 @@ jobs:
      - revert-migrations
   cleanup:
    docker:
-     - image: cimg/base:stable
+     - image: aradwann/ubuntu-aws-node-ansible
    steps:
      - checkout
-     - install_awscli
-     - install_nodejs
      - run:
          name: Remove old stacks and files
          command: |
