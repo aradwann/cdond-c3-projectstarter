@@ -1,9 +1,6 @@
 version: 2.1
-orbs:
- slack: circleci/slack@4.9.3
 
 commands:
-
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -38,7 +35,7 @@ commands:
               npm install
               npm run migration:revert
             fi
-            
+
 jobs:
   build-frontend:
     docker:
@@ -50,9 +47,9 @@ jobs:
       - run:
           name: Build front-end
           command: |
-           cd frontend
-           npm i
-           npm run build
+            cd frontend
+            npm i
+            npm run build
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-dependecies
@@ -67,9 +64,9 @@ jobs:
       - run:
           name: Back-end build
           command: |
-           cd backend
-           npm i
-           npm run build
+            cd backend
+            npm i
+            npm run build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-dependcies
@@ -84,10 +81,10 @@ jobs:
       - run:
           name: front-end unit test
           command: |
-           cd frontend
-           npm i
-           npm test
-                
+            cd frontend
+            npm i
+            npm test
+
   test-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -98,10 +95,10 @@ jobs:
       - run:
           name: Back-end unit test
           command: |
-           cd backend
-           npm i
-           npm test
-            
+            cd backend
+            npm i
+            npm test
+
   scan-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -112,10 +109,10 @@ jobs:
       - run:
           name: front-end audit
           command: |
-           cd frontend
-           npm i
-           npm audit fix --force --audit-level=critical
-           npm audit --audit-level=critical
+            cd frontend
+            npm i
+            npm audit fix --force --audit-level=critical
+            npm audit --audit-level=critical
 
   scan-backend:
     docker:
@@ -127,10 +124,10 @@ jobs:
       - run:
           name: Back-end audit
           command: |
-           cd backend
-           npm i
-           npm audit fix --force --audit-level=critical
-           npm audit --audit-level=critical
+            cd backend
+            npm i
+            npm audit fix --force --audit-level=critical
+            npm audit --audit-level=critical
 
   deploy-infrastructure:
     docker:
@@ -165,7 +162,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt 
+            - project/.circleci/ansible/inventory.txt
 
       - destroy-environment
 
@@ -235,7 +232,7 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
       - revert-migrations
-                    
+
   deploy-backend:
     docker:
       - image: aradwann/ubuntu-aws-node-ansible
@@ -303,51 +300,49 @@ jobs:
             fi
       - destroy-environment
       - revert-migrations
-      
 
   cloudfront-update:
-   docker:
-     - image: aradwann/ubuntu-aws-node-ansible
-   steps:
-     - checkout
-     - run:
-         name: Save Old Workflow ID to kvdb.io
-         command: |
-           export OLD_WORKFLOW_ID=$(aws cloudformation \
-                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                     --no-paginate --output text)
-           echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
-           curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
-     - run:
-         name: Update cloudfront distribution
-         command: |
-           aws cloudformation deploy \
-             --template-file .circleci/files/cloudfront.yml \
-             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-             --stack-name InitialStack
-     - destroy-environment
-     - revert-migrations
+    docker:
+      - image: aradwann/ubuntu-aws-node-ansible
+    steps:
+      - checkout
+      - run:
+          name: Save Old Workflow ID to kvdb.io
+          command: |
+            export OLD_WORKFLOW_ID=$(aws cloudformation \
+                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                      --no-paginate --output text)
+            echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
+            curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name InitialStack
+      - destroy-environment
+      - revert-migrations
   cleanup:
-   docker:
-     - image: aradwann/ubuntu-aws-node-ansible
-   steps:
-     - checkout
-     - run:
-         name: Remove old stacks and files
-         command: |
-           export STACKS=($(aws cloudformation list-stacks \
-               --query "StackSummaries[*].StackName" \
-               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-           echo Stack names: "${STACKS[@]}"
-           export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
-           echo Old Workflow ID: $OldWorkflowID 
-           if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-           then
-             aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-             aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-             aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-           fi
-            
+    docker:
+      - image: aradwann/ubuntu-aws-node-ansible
+    steps:
+      - checkout
+      - run:
+          name: Remove old stacks and files
+          command: |
+            export STACKS=($(aws cloudformation list-stacks \
+                --query "StackSummaries[*].StackName" \
+                --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
+            echo Old Workflow ID: $OldWorkflowID 
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+            fi
 
 workflows:
   default:
