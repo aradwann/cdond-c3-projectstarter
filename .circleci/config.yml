@@ -189,7 +189,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/node:13.8.0
+      - image: aradwann/ubuntu-aws-node-ansible
     steps:
       - checkout
       - run:
