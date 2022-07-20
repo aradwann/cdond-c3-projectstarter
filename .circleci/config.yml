@@ -126,6 +126,7 @@ jobs:
           command: |
             cd backend
             npm i
+            # requires two fix commands
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
@@ -159,6 +160,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
+            echo "--------------- inventory --------------------"
             cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
@@ -173,13 +175,14 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["0b:51:52:11:10:ea:07:10:1e:45:ef:00:84:58:1d:01"]
+          fingerprints: ["b6:ce:6c:48:ee:54:05:53:3a:06:8d:5c:23:33:ad:bc"]
       - attach_workspace:
           at: ~/
       - run:
           name: Configure Server
           command: |
             cd .circleci/ansible
+            echo "--------------- inventory --------------------"
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
@@ -224,6 +227,7 @@ jobs:
              --query 'Reservations[*].Instances[*].PublicIpAddress' \
              --output text)
             echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+            echo "--------------- frontend env --------------------"
             cat frontend/.env
       - run:
           name: Deploy frontend objects
@@ -240,7 +244,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["0b:51:52:11:10:ea:07:10:1e:45:ef:00:84:58:1d:01"]
+          fingerprints: ["b6:ce:6c:48:ee:54:05:53:3a:06:8d:5c:23:33:ad:bc"]
       - attach_workspace:
           at: ~/
       - restore_cache:
@@ -261,10 +265,8 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            export TYPEORM_MIGRATIONS_DIR=./migrations
-            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-            export TYPEORM_MIGRATIONS=./migrations/*.ts
             cd .circleci/ansible
+            echo "--------------- inventory --------------------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
@@ -283,6 +285,8 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             export API_URL=http://${BACKEND_PUBLIC_IP}:3030
+            echo "--------------- API URL --------------------"
+            echo $API_URL
             if curl -s $API_URL/api/status | grep "ok"
             then
               exit 0
@@ -313,7 +317,8 @@ jobs:
             export OLD_WORKFLOW_ID=$(aws cloudformation \
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                       --no-paginate --output text)
-            echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
+            echo "--------------- old workflow ID --------------------"
+            echo  $OLD_WORKFLOW_ID
             curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
       - run:
           name: Update cloudfront distribution
